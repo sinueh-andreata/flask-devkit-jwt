@@ -2,7 +2,6 @@ from flask_jwt_extended import create_access_token, verify_jwt_in_request, get_j
 from flask import Blueprint, request, jsonify
 from src.models.models import User
 from functools import wraps
-from src.extensions import csrf
 
 jwt_bp = Blueprint("jwt", __name__, url_prefix="/auth")
 
@@ -22,8 +21,7 @@ def roles_required(*required_roles):
         return decorator
     return wrapper
 
-@jwt_bp.route("/jwt/login", methods=["POST"])
-@csrf.exempt
+@jwt_bp.route("/login", methods=["POST"])
 def login():
     user = User.query.filter_by(email=request.json["email"]).first()
     if not user or not user.check_password(request.json["password"]):
@@ -32,15 +30,8 @@ def login():
     roles = [role.name for role in user.roles]
 
     access_token = create_access_token(
-        identity=str(user.id),  # << CONVERTA PARA STRING
+        identity=(user.id),
         additional_claims={"roles": roles}
     )
 
     return {"access_token": access_token}
-
-
-@jwt_bp.route("/admin/panel", methods=["GET"])
-@csrf.exempt
-@roles_required("admin")
-def admin_panel():
-    return jsonify({"msg": "Painel do administrador"})
