@@ -1,0 +1,18 @@
+services:
+  aplicativo_web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: flask_devkit # nome do contêiner
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - .env.dev
+    environment:
+      - FLASK_ENV=development
+    volumes:
+      - .:/app
+      - ./logs:/app/logs

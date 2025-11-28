@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste JWT + Roles</title>
+    <style>
+        body { font-family: Arial; max-width: 400px; margin: 40px auto; }
+        input, button { width: 100%; padding: 10px; margin: 8px 0; }
+        #response { margin-top: 20px; white-space: pre-wrap; background: #f0f0f0; padding: 10px; }
+    </style>
+</head>
+<body>
+
+<h2>Login JWT Test</h2>
+
+<form id="loginForm">
+    <input id="email" type="text" placeholder="email" required>
+    <input id="password" type="password" placeholder="senha" required>
+    <button type="submit">Login</button>
+</form>
+
+<hr>
+
+<h2>Rota Protegida</h2>
+<button onclick="getProtected()">Acessar /admin/panel</button>
+
+<div id="response"></div>
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    await login();
+});
+
+async function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    
+    if (!email || !password) {
+        document.getElementById("response").innerText = "Preencha email e senha!";
+        return;
+    }
+
+    try {
+        const res = await fetch("/auth/jwt/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify({ email, password })
+        });
+
+        if (!res.ok) {
+            const error = await res.text();
+            document.getElementById("response").innerText = `Erro: ${res.status}\n${error}`;
+            return;
+        }
+
+        const result = await res.json();
+        if (result.access_token) {
+            localStorage.setItem("token", result.access_token);
+            document.getElementById("response").innerText = "Login bem-sucedido! Token armazenado.";
+        }
+    } catch (error) {
+        document.getElementById("response").innerText = "Erro na requisição:\n" + error.message;
+    }
+}
+
+async function getProtected() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        document.getElementById("response").innerText = "Faça login primeiro!";
+        return;
+    }
+
+    try {
+        const res = await fetch("/auth/admin/panel", {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        if (!res.ok) {
+            const error = await res.text();
+            document.getElementById("response").innerText = `Acesso negado: ${res.status}\n${error}`;
+            return;
+        }
+
+        const data = await res.json();
+        document.getElementById("response").innerText =
+            "✅ Resposta da rota protegida:\n" + JSON.stringify(data, null, 2);
+    } catch (error) {
+        document.getElementById("response").innerText = "Erro na requisição:\n" + error.message;
+    }
+}
+</script>
+
+</body>
+</html>

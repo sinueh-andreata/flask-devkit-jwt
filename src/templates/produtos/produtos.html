@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Gestão de Products</title>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Gestão de Products</h1>
+            <p class="text-gray-600">Cadastre, atualize e gerencie seus products</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Formulário de Cadastro -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Cadastrar Product</h2>
+                <form id="formproducts" class="space-y-4">
+                    <input type="hidden" id="csrf_token" name="csrf_token" value="{{ csrf_token() }}">
+                    
+                    <div>
+                        <label for="nome" class="block text-sm font-medium text-gray-700 mb-1">Nome do Product</label>
+                        <input type="text" id="nome" placeholder="Ex: Notebook Dell" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="preco" class="block text-sm font-medium text-gray-700 mb-1">Preço (R$)</label>
+                        <input type="number" id="preco" placeholder="0.00" step="0.01" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="estoque" class="block text-sm font-medium text-gray-700 mb-1">Estoque</label>
+                        <input type="number" id="estoque" placeholder="0" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <button type="submit" 
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                            Salvar Product
+                    </button>
+                </form>
+            </div>
+
+            <!-- Lista de Products -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Products Cadastrados</h2>
+                <div id="productsForm" class="space-y-2 max-h-[500px] overflow-y-auto">
+                    <!-- Products serão carregados aqui via JavaScript -->
+                </div>
+            </div>
+
+            <!-- Formulário de Atualização (Inicialmente Escondido) -->
+            <div id="updateSection" class="bg-white rounded-lg shadow-md p-6 hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold text-gray-800">Update Product</h2>
+                    <button type="button" id="closeUpdate" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <form id="putProductForm" class="space-y-4">
+                    <input type="hidden" id="csrf_token" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" id="product_id" name="product_id">
+                    
+                    <div>
+                        <label for="nome_update" class="block text-sm font-medium text-gray-700 mb-1">Nome do Product</label>
+                        <input type="text" id="nome_update" name="nome" placeholder="Novo nome" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="preco_update" class="block text-sm font-medium text-gray-700 mb-1">Preço (R$)</label>
+                        <input type="number" id="preco_update" name="preco" placeholder="0.00" step="0.01" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="estoque_update" class="block text-sm font-medium text-gray-700 mb-1">Estoque</label>
+                        <input type="number" id="estoque_update" name="estoque" placeholder="0" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+                    
+                    <button type="submit" 
+                            class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                            Update Product
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- <div id="resposta" class="mt-6"></div> -->
+    </div>
+</body>
+    <script src="/static/js/csrf.js"></script>
+    <script src="/static/js/products/cadastrarProduct.js"></script>
+    <script src="/static/js/products/deleteProduct.js"></script>
+    <script src="/static/js/products/getProduct.js"></script>
+    <script src="/static/js/products/putProduct.js"></script>
+</html>
