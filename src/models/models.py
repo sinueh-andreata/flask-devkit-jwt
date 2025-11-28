@@ -2,6 +2,10 @@ from datetime import datetime
 import uuid
 from src.extensions import db
 from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
+from src.extensions import db
+
+ph = PasswordHasher()
 
 class RolesUsers(db.Model):
     __tablename__ = 'roles_users'
@@ -17,20 +21,27 @@ class Role(db.Model):
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
 
-class User(db.Model,):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
-    email = db.Column(db.String(255), unique=True)
-    password = db.Column(db.String(255))
-    active = db.Column(db.Boolean())
-    confirmed_at = db.Column(db.DateTime())
+class User(db.Model):
+    __tablename__ = "users"
 
-    fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
 
-    roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
-        
+    roles = db.relationship(
+        "Role",
+        secondary="roles_users",
+        backref=db.backref("users", lazy="dynamic")
+    )
+
+    def set_password(self, password):
+        self.password = ph.hash(password)
+
     def check_password(self, password):
-        return verify_password(password, self.password)
+        try:
+            return ph.verify(self.password, password)
+        except VerifyMismatchError:
+            return False
 
 class Product(db.Model):
     __tablename__ = 'products'
@@ -92,7 +103,7 @@ def create_default_users():
         if existing_user:
             continue
 
-        hashed_password = hash_password(u['password'])
+        hashed_password = ph.hash(u['password'])
 
         user = User(
             email=u['email'],

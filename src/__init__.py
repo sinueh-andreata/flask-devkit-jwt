@@ -8,7 +8,7 @@ from auth.jwt_auth import jwt_bp
 from .auth import auth
 
 def create_app(config_class=ConfigDev):
-    app = Flask(__name__, template_folder="templates")
+    app = Flask(__name__)
 
     app.config.from_object(config_class)
 
@@ -19,9 +19,6 @@ def create_app(config_class=ConfigDev):
     limiter.init_app(app)
     jwt.init_app(app)
     
-    # inicializa o modulo de autenticação
-    auth.init_app(app)
-
     # importando rotas 
     app.register_blueprint(products_bp)
     app.register_blueprint(jwt_bp)
