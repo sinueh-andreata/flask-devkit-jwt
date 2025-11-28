@@ -11,7 +11,6 @@ from src.auth.jwt_auth import roles_required
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 @admin_bp.route('/create/products', methods=['POST'])
-@jwt_required()
 @roles_required('admin')
 def create_product():
     schema = ProductSchema()
