@@ -1,7 +1,5 @@
 from datetime import datetime
 import uuid
-from flask_security.utils import hash_password, verify_password
-from flask_security import UserMixin, RoleMixin
 from src.extensions import db
 from argon2 import PasswordHasher
 
@@ -13,13 +11,13 @@ class RolesUsers(db.Model):
     
 roles_users = RolesUsers.__table__
     
-class Role(db.Model, RoleMixin):
+class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
 
-class User(db.Model, UserMixin):
+class User(db.Model,):
     __tablename__ = 'users'
     id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
     email = db.Column(db.String(255), unique=True)

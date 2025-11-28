@@ -1,6 +1,4 @@
 from flask import Blueprint, jsonify, request
-from flask_security import login_required
-from flask_security.decorators import current_user, roles_accepted
 from src.schemas.schemas import ProductSchema
 from src.services.products_service import ProductsService
 from src.extensions import db
@@ -10,8 +8,6 @@ from sqlalchemy.exc import IntegrityError
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 @admin_bp.route('/create/products', methods=['POST'])
-@login_required
-@roles_accepted('admin', 'user')
 def create_product():
     schema = ProductSchema()
     try:

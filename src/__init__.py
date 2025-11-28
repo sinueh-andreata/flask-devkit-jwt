@@ -1,10 +1,7 @@
 from flask import Flask
 from .config import ConfigDev
-from .extensions import db, csrf, security, ma, cors, limiter, jwt
+from .extensions import db, ma, cors, limiter, jwt
 from .models.models import create_default_roles, create_default_users
-from src.auth.datastore import user_datastore  
-from src.auth import init_app as init_auth
-from src.routes.routes import routes_bp
 from controllers.products_controller import products_bp
 from auth.jwt_auth import jwt_bp
 
@@ -17,20 +14,15 @@ def create_app(config_class=ConfigDev):
 
     # inicializa as extensoes do extensions.py
     db.init_app(app)
-    csrf.init_app(app)
     ma.init_app(app)
     cors.init_app(app)
     limiter.init_app(app)
     jwt.init_app(app)
     
-    # configuração do Flask-Security
-    security.init_app(app, user_datastore)
-
     # inicializa o modulo de autenticação
     auth.init_app(app)
 
     # importando rotas 
-    app.register_blueprint(routes_bp)
     app.register_blueprint(products_bp)
     app.register_blueprint(jwt_bp)
 
