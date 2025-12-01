@@ -7,11 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
+        const data = Object.fromEntries(new FormData(form).entries()); // Converte os dados do formulário em um objeto
 
         try {
-            const novoProduct = await createProduct(data, csrfToken); // Passe o token aqui
+            const novoProduct = await createProduct(data, csrfToken);
             console.log('Product criado:', novoProduct);
         } catch (error) {
             console.error('Erro ao create product:', error);
